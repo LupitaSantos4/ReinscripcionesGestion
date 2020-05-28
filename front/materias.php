@@ -1,109 +1,74 @@
+<?php 
+session_start(); 
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
 	<meta charset="utf-8"/>
-	<title>Consulta de materias por carrera</title>
+	<title>Materias por carrera</title>
 	<link rel="stylesheet" type="text/css" href="./css/estilos.css">
 	<script type="text/javascript"  href="./js/scripts.js"></script>
 </head>
 <body>
-	 <center>	
+    <center>
+    <header>
         <h1>Consulta de materias por carrera</h1>
-<table>
-                <tr>
-                    <td>idCarrera</td>
-                    <td>nombre</td>
-                </tr>
+    </header>
+<form id="formulario" method="get">
+
+<select name="idC">
+    <option value="">Seleccionar Carrera</option>
 <?php 
     $url="http://127.0.0.1:8181/reinscripciones/carreras";
     $json=file_get_contents($url);
     $datos=json_decode($json,true);
-    $long=count($datos);
+    if ($datos>0) {
+      $long=count($datos);
         for ($i=0; $i < $long; $i++) { 
             $idCarrera=$datos[$i]['idCarrera'];
-            $nombre=$datos[$i]['nombre'];
-            echo "
-                <tr>
-                    <td><label>".$idCarrera."</label></td>
-                    <td><label>".$nombre."</label></td>
-                </tr> ";
+            $carrera=$datos[$i]['carrera'];
+            echo '<option value="'.$idCarrera.'">'.$carrera.'</option>';    
+    }
+   
 }
 ?>
-</table>
-<br>
-<form id="formulario" method="get">
-        <input type="txt" name="idC" value="" placeholder="Introzduca el iD de la carrera" required="true"><br><br>
-        <button type="sumit" name="button">Buscar</button>
+</select>   
+        <input type="submit" name="button" value="Buscar" class="aceptar">
 </form>
-<br>
-<table>
+<br> 
+<table id="tab">
             <tr>
-                <td>creditos</td>
-                <td>teorica</td>
-                <td>practica</td>
-                <td>idCarrera</td>
-                <td>idDocente</td>
-                <td>idMateria</td>
-                <td>nombre</td>
-                <td>semestre</td>
+                <td>Creditos</td>
+                <td>Teorica</td>
+                <td>Practica</td>
+                <td>Materia</td>
+                <td>Semestre</td>
             </tr>
-
 <?php 
-  $verificar=false; 
 
-    if (isset($_GET['idC'])&&$_GET['idC']!=null) {
-    $url="http://127.0.0.1:8181/reinscripciones/materias/carreras/".$_GET['idC'];
-    $json=file_get_contents($url);
-    $datosC=json_decode($json,true);
-    $long=count($datosC);
-    
-    $creditos=" ";
-    $teorica=" ";
-    $practica=" ";
-    $idCarrera=" ";
-    $idDocente=" ";
-    $idMateria=" ";
-    $nombre=" ";
-    $semestre=" ";
-
-for ($i=0; $i < $long; $i++) { 
-if ($_GET['idC']==$datosC[$i]['idCarrera']) {
-    $verificar=true;
-}
-}
-if ($verificar) {
+if (isset($_GET['idC'])&&$_GET['idC']!=null) {
     $idCarrera=$_GET['idC'];
-    $url="http://127.0.0.1:8181/reinscripciones/materias/carreras/".$idCarrera;
-    $json=file_get_contents($url);
-    $datos=json_decode($json,true);
-for ($i=0; $i <$long ; $i++) { 
-    $creditos=$datos[$i]['creditos'];
-    $teorica=$datos[$i]['teorica'];
-    $practica=$datos[$i]['practica'];
-    $idCarrera=$datos[$i]['idCarrera'];
-    $idDocente=$datos[$i]['idDocente'];
-    $idMateria=$datos[$i]['idMateria'];
-    $nombre=$datos[$i]['nombre'];
-    $semestre=$datos[$i]['semestre'];
-
+    $url2="http://127.0.0.1:8181/reinscripciones/materias/carreras/".$idCarrera;
+    $json2=file_get_contents($url2);
+    $datos2=json_decode($json2,true);
+    $long2=count($datos2);
+    if ($long2>0) {
+for ($i=0; $i <$long2 ; $i++) { 
         echo '
-            <tr>
-                <td><label>'.$creditos.'</label></td>
-                <td><label>'.$teorica.'</label></td>
-                <td><label>'.$practica.'</label></td>
-                <td><label>'.$idCarrera.'</label></td>
-                <td><label>'.$idDocente.'</label></td>
-                <td><label>'.$idMateria.'</label></td>
-                <td><label>'.$nombre.'</label></td>
-                <td><label>'.$semestre.'</label></td>
+            <tr  class="coco">
+                <td><label>'.$datos2[$i]['creditos'].'</label></td>
+                <td><label>'.$datos2[$i]['teorica'].'</label></td>
+                <td><label>'.$datos2[$i]['practica'].'</label></td>
+                <td><label>'.$datos2[$i]['materia'].'</label></td>
+                <td><label>'.$datos2[$i]['semestre'].'</label></td>
             </tr>';
 }
 }else{
-    echo '<script type="text/javascript"> alert("No hay materias para esa carrera")</script>';
-}} 
+    echo '<h2> No hay materias para esa carrera</h2><br>';
+}
+}
 ?>
         </table>
     </center>
-<section>
-</section>
+</body>
 </html>
